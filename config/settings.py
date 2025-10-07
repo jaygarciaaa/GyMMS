@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     
-    # GMSS apps
+    # GyMMS apps
     "core",
     "dashboard",
     "memberships",

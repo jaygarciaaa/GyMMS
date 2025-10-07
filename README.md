@@ -1,5 +1,5 @@
-# GMSS
-Gym Membership Subscription System
+# GyMMS
+Gym Membership Management System
 
 ### Problem Identification:
     1. Manual tracking of membership subscriptions, time consuming and very prone to human errors

@@ -10,8 +10,8 @@ class User(AbstractUser):
     ]
     
     SEX_CHOICES = [
-        ('Male', 'male', 'M', 'm'), 
-        ('Female', 'female', 'F', 'f'),
+        ('Male', 'Male'),
+        ('Female', 'Female'),
     ]
     
     # Login & Basic User Requirements
@@ -33,6 +33,7 @@ class User(AbstractUser):
     is_phone_verified = models.BooleanField(default=False)
     last_password_change = models.DateTimeField(null=True, blank=True)
     
+    # Soft delete fields
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
 

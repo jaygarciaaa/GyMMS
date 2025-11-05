@@ -5,50 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GyMMS | Gym Membership Management System</title>
-    <link rel="stylesheet" href="{% static 'core/style.css' %}">
-    <script defer src="{% static 'core/script.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'core/css/index.css' %}">
+    <script defer src="{% static 'core/js/index.js' %}"></script>
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <header class="navbar">
-        <div class="logo">
-            <a href="{% url 'core:index' %}">GyMMS</a>
-        </div>
-
-        <nav class="nav-links">
-            <a href="{% url 'dashboard:base' %}">Dashboard</a>
-            <a href="{% url 'memberships:base' %}">Memberships</a>
-            <a href="{% url 'metrics:base' %}">Metrics</a>
-        </nav>
-
-        <div class="profile-menu">
-            {% if user.is_authenticated %}
-                <div class="profile-icon" id="profile-icon">👤</div>
-                <div class="dropdown" id="profile-dropdown">
-                    <a href="#">Settings</a>
-                    <a href="{% url 'users:logout' %}">Logout</a>
-                </div>
-            {% else %}
-                <button onclick="location.href='{% url 'core:login' %}'" class="btn btn-primary">Login</button>
-                <button onclick="location.href='{% url 'core:register' %}'" class="btn btn-ghost">Register</button>
-            {% endif %}
-        </div>
-    </header>
+    <!-- Navigation Bar (separated partial) -->
+    {% include 'core/navbar.html' %}
 
     <!-- Main Content -->
     <main class="landing">
         {% block content %}
-        {# If the user is authenticated, redirect them to the dashboard. This uses a small client-side redirect
-           so the template can handle the behaviour without changing view logic. #}
         {% if user.is_authenticated %}
             <script>
                 // Respect URL reversing on server side
-                window.location.replace("{% url 'dashboard:base' %}");
+                winow.location.replace("{% url 'dashboard:dashboard' %}");
             </script>
         {% else %}
         <div class="container landing-grid">
             <!-- Left column: Welcome message -->
-            <div class="left-pane">
+            <div class="left-pane animate-entry">
                 <h1>Welcome to GyMMS</h1>
                 <p>
                     A Django-powered web app designed to simplify and automate gym membership management by providing efficient
@@ -58,7 +33,7 @@
             </div>
 
             <!-- Right column: Login / Register forms with toggle -->
-            <div class="right-pane">
+            <div class="right-pane animate-entry">
                 <div class="form-header">
                     <h2 id="form-title" class="text-2xl">Login</h2>
                     <button id="toggle-btn" class="btn-link text-sm">Register</button>

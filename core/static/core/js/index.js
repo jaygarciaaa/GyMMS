@@ -1,26 +1,5 @@
 // Wait until DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
-    // === Profile Dropdown ===
-    const profileIcon = document.getElementById("profile-icon");
-    const profileDropdown = document.getElementById("profile-dropdown");
-
-    if (profileIcon) {
-        profileIcon.addEventListener("click", function () {
-            profileDropdown.style.display =
-                profileDropdown.style.display === "block" ? "none" : "block";
-        });
-
-        // Close dropdown if clicking outside
-        window.addEventListener("click", function (event) {
-            if (
-                event.target !== profileIcon &&
-                !profileDropdown.contains(event.target)
-            ) {
-                profileDropdown.style.display = "none";
-            }
-        });
-    }
-
     // === Modals ===
     const loginBtn = document.getElementById("login-btn");
     const signupBtn = document.getElementById("signup-btn");

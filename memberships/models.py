@@ -2,32 +2,67 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+class MembershipConfig(models.Model):
+    membership_fee = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        help_text="Monthly membership fee that can only be modified by the owner"
+    )
+    last_modified = models.DateTimeField(auto_now=True)
+    modified_by = models.ForeignKey(
+        'users.StaffUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        limit_choices_to={'role': 'Owner'},
+        related_name='fee_modifications'
+    )
+
+    class Meta:
+        verbose_name = "Membership Configuration"
+        verbose_name_plural = "Membership Configuration"
+
 class Member(models.Model):    
-    member = models.OneToOneField(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
-        related_name='member_profile', 
-        limit_choices_to={'role': 'member'}
-    )
+    SEX_CHOICES = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    ]
     
-     # Membership details
-    membership_plan = models.ForeignKey(
-        'membership_plans.Membership_Plan',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='current_members'
+    # Basic Member Information
+    member_id = models.CharField(
+        max_length=10, 
+        unique=True, 
+        editable=False,
+        help_text='Auto-generated unique member ID'
     )
-    last_membership_plan = models.ForeignKey(
-        'membership_plans.Membership_Plan',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='previous_members'
-    )
+    name = models.CharField(max_length=150)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=15)
+    sex = models.CharField(max_length=10, choices=SEX_CHOICES, null=True, blank=True)
+    
+    # Contact & Emergency Information
+    address = models.TextField()
+    emergency_contact = models.CharField(max_length=100)
+    emergency_phone = models.CharField(max_length=15)
+    
+    # Membership details
     start_date = models.DateField()
     end_date = models.DateField()
+    membership_fee = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        help_text="Monthly fee at the time of registration/renewal"
+    )
     is_active = models.BooleanField(default=True)
+    
+    # Record Management
+    created_by = models.ForeignKey(
+        'users.StaffUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='created_members',
+        help_text='The staff/owner who created this member'
+    )
+    date_created = models.DateTimeField(auto_now_add=True)
         
     #Check if the membership is still valid.
     def is_membership_active(self):

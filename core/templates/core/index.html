@@ -3,7 +3,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="GyMMS - Gym Membership Management System for efficient subscription tracking and member management">
     <title>GyMMS | Gym Membership Management System</title>
     <link rel="stylesheet" href="{% static 'core/css/index.css' %}">
     <script defer src="{% static 'core/js/index.js' %}"></script>
@@ -17,8 +18,8 @@
         {% block content %}
         {% if user.is_authenticated %}
             <script>
-                // Respect URL reversing on server side
-                winow.location.replace("{% url 'dashboard:dashboard' %}");
+                // Redirect authenticated users to dashboard
+                window.location.replace("{% url 'dashboard:dashboard' %}");
             </script>
         {% else %}
         <div class="container landing-grid">
@@ -29,14 +30,13 @@
                     A Django-powered web app designed to simplify and automate gym membership management by providing efficient
                     subscription tracking, payment monitoring, and member activity metrics.
                 </p>
-                <p class="mt-6 muted text-sm">Manage members, payments, and see activity metrics all in one place.</p>
+                <p class="muted">Manage members, payments, and see activity metrics all in one place.</p>
             </div>
 
-            <!-- Right column: Login / Register forms with toggle -->
+            <!-- Right column: Login form -->
             <div class="right-pane animate-entry">
                 <div class="form-header">
-                    <h2 id="form-title" class="text-2xl">Login</h2>
-                    <button id="toggle-btn" class="btn-link text-sm">Register</button>
+                    <h2>Login</h2>
                 </div>
 
                 <!-- Login form -->
@@ -55,47 +55,12 @@
                     <button type="submit" class="btn btn-primary w-full">
                         Login
                     </button>
+
+                    <!-- Error display -->
+                    {% if error %}
+                    <p class="msg-error">{{ error }}</p>
+                    {% endif %}
                 </form>
-
-                <!-- Register form (hidden by default) -->
-                <form id="register-form" method="POST" action="{% url 'core:register' %}" class="hidden">
-                    {% csrf_token %}
-                    <div class="form-row">
-                        <label for="reg-username">Username</label>
-                        <input type="text" name="username" id="reg-username" required>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="reg-email">Email</label>
-                        <input type="email" name="email" id="reg-email" required>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="reg-phone">Phone Number</label>
-                        <input type="text" name="phone_number" id="reg-phone" required>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="reg-password">Password</label>
-                        <input type="password" name="password" id="reg-password" required>
-                    </div>
-
-                    <div class="form-row">
-                        <label for="reg-password2">Re-enter Password</label>
-                        <input type="password" name="password2" id="reg-password2" required>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-full">
-                        Register
-                    </button>
-                </form>
-
-                <!-- Error / success display (works if view passes `error` or messages) -->
-                {% if error %}
-                <p id="form-error" class="msg-error">{{ error }}</p>
-                {% else %}
-                <p id="form-error" class="msg-error hidden"></p>
-                {% endif %}
             </div>
         </div>
         {% endif %}

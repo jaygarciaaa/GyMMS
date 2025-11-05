@@ -3,7 +3,8 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+	<meta name="description" content="GyMMS Dashboard - Manage your gym operations">
 	<title>Dashboard | GyMMS</title>
 	<link rel="stylesheet" href="{% static 'core/css/index.css' %}">
 </head>
@@ -11,8 +12,9 @@
 	{% include 'core/navbar.html' %}
 
 	<main class="container" style="margin-top:2rem">
-		<h1>Welcome to GyMMS</h1>
-		<p>This is the dashboard module's index and base page.</p>
+		<h1>Welcome to GyMMS Dashboard</h1>
+		<p>User: {{ user.username }} ({{ user.role }})</p>
+		<p>Authenticated: {{ user.is_authenticated }}</p>
 	</main>
 
 	<script defer src="{% static 'core/js/index.js' %}"></script>

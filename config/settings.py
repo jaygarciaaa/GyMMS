@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     # GyMMS apps
     "core",
     "dashboard",
-    "membership_plans",
     "memberships",
     "metrics",
     "payments",
@@ -103,7 +102,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.StaffUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

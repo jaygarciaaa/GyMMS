@@ -94,14 +94,11 @@ function redirectToPayment(memberId, status) {
     const modal = window.getPaymentBridgeModal();
     if (modal) {
         // Determine status for modal
-        // Treat 'expiring' as 'active' since expiring members are still active
         let modalStatus = statusLower;
         if (modalStatus === 'expiring soon') {
             modalStatus = 'expiring';
         }
-        if (modalStatus === 'expiring') {
-            modalStatus = 'active';
-        }
+        // Keep 'expiring' as 'expiring', don't convert to 'active'
         
         // Show modal
         modal.show({

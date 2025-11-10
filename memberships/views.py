@@ -78,15 +78,16 @@ def create_member(request):
         address = request.POST.get('address')
         emergency_contact = request.POST.get('emergency_contact')
         emergency_phone = request.POST.get('emergency_phone')
-        start_date = request.POST.get('start_date')
-        end_date = request.POST.get('end_date')
-        membership_fee = request.POST.get('membership_fee')
         
         # Handle photo upload
         photo = request.FILES.get('member_photo') or request.FILES.get('camera_input')
         
         # Generate unique member ID
         member_id = generate_member_id()
+        
+        # Set default values for membership details
+        # New members are inactive by default until first payment
+        today = timezone.now().date()
         
         # Create member
         member = Member.objects.create(
@@ -98,15 +99,15 @@ def create_member(request):
             address=address,
             emergency_contact=emergency_contact,
             emergency_phone=emergency_phone,
-            start_date=start_date,
-            end_date=end_date,
-            membership_fee=membership_fee,
+            start_date=today,  # Placeholder, will be set on first payment
+            end_date=today,    # Placeholder, will be set on first payment
+            membership_fee=0,  # Placeholder, will be set on first payment
             photo=photo,
-            is_active=True,
+            is_active=False,   # Inactive by default until payment
             created_by=request.user
         )
         
-        messages.success(request, f'Member {name} added successfully!')
+        messages.success(request, f'Member {name} added successfully! Process payment to activate membership.')
         return redirect('memberships:memberships')
     
     return redirect('memberships:memberships')

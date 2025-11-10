@@ -1,0 +1,104 @@
+/**
+ * Delete Confirmation Modal Styles
+ * Reusable modal for delete confirmations across the memberships module
+ */
+
+.delete-modal .delete-modal-content {
+	max-width: 500px;
+}
+
+.delete-modal-body {
+	text-align: center;
+	padding: 1rem 0;
+}
+
+.delete-icon-container {
+	width: 80px;
+	height: 80px;
+	margin: 0 auto 1rem;
+	background: rgba(239, 68, 68, 0.1);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.delete-icon-container svg {
+	stroke: #ef4444;
+}
+
+.delete-modal-body h3 {
+	margin-bottom: 0.5rem;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.delete-modal-message {
+	color: var(--muted);
+	margin-bottom: 1rem;
+	line-height: 1.6;
+}
+
+.delete-modal-message strong {
+	color: var(--text-primary);
+	font-weight: 600;
+}
+
+.delete-modal-warning {
+	color: #ef4444;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Active status message styling */
+.delete-modal-active-warning {
+	background: rgba(239, 68, 68, 0.1);
+	border: 1px solid rgba(239, 68, 68, 0.3);
+	border-radius: 8px;
+	padding: 1rem;
+	margin-top: 1rem;
+	color: #ef4444;
+	font-weight: 500;
+}
+
+.delete-modal-active-warning svg {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 0.5rem;
+}
+
+/* Custom rounded delete button for modal */
+.btn-danger-rounded {
+	padding: 0.75rem 1.5rem;
+	border-radius: 12px;
+	font-weight: 600;
+	font-size: 0.95rem;
+	border: none;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: #ef4444;
+	color: white;
+}
+
+.btn-danger-rounded:hover {
+	background: #dc2626;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger-rounded:disabled {
+	background: #9ca3af;
+	cursor: not-allowed;
+	opacity: 0.6;
+	color: white;
+}
+
+.btn-danger-rounded:disabled:hover {
+	background: #9ca3af;
+	transform: none;
+	box-shadow: none;
+}

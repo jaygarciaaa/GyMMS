@@ -21,9 +21,9 @@ def login(request):
             auth_login(request, user)
             return redirect("dashboard:dashboard")  # Redirect after successful login
         else:
-            return render(request, "core/login.html", {"error": "Invalid username or password"})
+            return render(request, "core/index.html", {"error": "Invalid username or password"})
 
-    return render(request, "core/login.html")
+    return render(request, "core/index.html")
 
 
 @login_required

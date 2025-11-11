@@ -128,9 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const memberNameElement = document.querySelector('.member-name');
             const memberName = memberNameElement ? memberNameElement.textContent.trim() : '';
             
-            // Check if member is active
+            // Check if member is active or expiring (both have active subscriptions)
             const statusBadge = document.querySelector('.status-badge');
-            const isActive = statusBadge && statusBadge.classList.contains('active');
+            const isActive = statusBadge && (statusBadge.classList.contains('active') || statusBadge.classList.contains('expiring'));
             
             // Show delete modal
             const modal = window.getDeleteModal();

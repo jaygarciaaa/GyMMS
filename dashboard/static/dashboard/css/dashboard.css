@@ -924,14 +924,6 @@ a.mini-card-header:hover {
         padding: 1rem 0.75rem;
     }
     
-    .check-in-options {
-        grid-template-columns: 1fr;
-    }
-    
-    .modal-content {
-        width: 95%;
-    }
-    
     .card-header-actions {
         flex-direction: column;
         gap: 0.5rem;

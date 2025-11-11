@@ -90,8 +90,7 @@ class DeleteModal {
 		
 		// Show modal
 		if (this.modal) {
-			this.modal.style.display = 'flex';
-			this.modal.classList.add('active');
+			this.modal.classList.add('delete-modal-active');
 			document.body.style.overflow = 'hidden';
 		}
 	}
@@ -170,9 +169,8 @@ class DeleteModal {
 	 */
 	close() {
 		if (this.modal) {
-			this.modal.style.display = 'none';
-			this.modal.classList.remove('active');
-			document.body.style.overflow = 'auto';
+			this.modal.classList.remove('delete-modal-active');
+			document.body.style.overflow = '';
 		}
 		
 		// Reset state
@@ -194,12 +192,21 @@ class DeleteModal {
 // Initialize delete modal when DOM is loaded
 let deleteModal;
 
-document.addEventListener('DOMContentLoaded', () => {
-	deleteModal = new DeleteModal();
-});
-
-// Export for use in other scripts
+// Export for use in other scripts immediately
 if (typeof window !== 'undefined') {
 	window.DeleteModal = DeleteModal;
-	window.getDeleteModal = () => deleteModal;
+	window.getDeleteModal = () => {
+		// Initialize on first access if not already initialized
+		if (!deleteModal) {
+			deleteModal = new DeleteModal();
+		}
+		return deleteModal;
+	};
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+	// Initialize delete modal if not already done
+	if (!deleteModal) {
+		deleteModal = new DeleteModal();
+	}
+});

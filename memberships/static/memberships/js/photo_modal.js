@@ -234,13 +234,11 @@ class PhotoModal {
 	}
 	
 	removePhoto() {
-		if (confirm('Are you sure you want to remove the photo? This will be saved when you submit the form.')) {
-			// Call callback
-			if (this.onPhotoRemoved && typeof this.onPhotoRemoved === 'function') {
-				this.onPhotoRemoved();
-			}
-			this.close();
+		// Call callback to remove photo (no confirmation needed, user will confirm via Save Changes button)
+		if (this.onPhotoRemoved && typeof this.onPhotoRemoved === 'function') {
+			this.onPhotoRemoved();
 		}
+		this.close();
 	}
 }
 

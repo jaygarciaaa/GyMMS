@@ -187,31 +187,37 @@
 /* Column widths - total should not exceed 100% */
 .col-member-id {
     width: 120px;
+    text-align: center;
 }
 
 .col-name {
-    width: 250px;
+    width: 280px;
 }
 
 .col-contact {
-    width: 150px;
+    width: 140px;
+    text-align: center;
 }
 
 .col-start-date {
-    width: 120px;
+    width: 140px;
+    text-align: center;
 }
 
 .col-end-date {
-    width: 120px;
+    width: 140px;
+    text-align: center;
 }
 
 .col-status {
-    width: 100px;
+    width: 130px;
+    text-align: center;
 }
 
 .col-actions {
     flex: 1; /* Fill all remaining space */
-    min-width: 150px;
+    min-width: 100px;
+    text-align: center;
 }
 
 .members-table th {
@@ -221,7 +227,23 @@
     font-weight: 700;
     color: var(--muted);
     text-transform: uppercase;
+    text-align: center;
     letter-spacing: 0.5px;
+}
+
+/* Center align specific table headers */
+.members-table th.col-member-id,
+.members-table th.col-contact,
+.members-table th.col-start-date,
+.members-table th.col-end-date,
+.members-table th.col-status,
+.members-table th.col-actions {
+    text-align: center;
+}
+
+/* Add extra padding to Actions header only */
+.members-table th.col-actions {
+    padding-right: 2rem;
 }
 
 .members-table td {
@@ -375,6 +397,7 @@
 .action-buttons {
     display: flex;
     gap: 0.5rem;
+    justify-content: center;
 }
 
 .btn-icon {
@@ -519,24 +542,30 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     border-bottom: 2px solid #f3f4f6;
 }
 
 .modal-header h2 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.375rem;
     color: var(--text);
 }
 
 .modal-close {
     background: none;
     border: none;
-    font-size: 2rem;
+    font-size: 1.75rem;
     color: var(--muted);
     cursor: pointer;
     line-height: 1;
     transition: color 0.2s ease;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-close:hover {
@@ -544,14 +573,14 @@
 }
 
 .modal-body {
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
 }
 
 .modal-footer {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     border-top: 2px solid #f3f4f6;
 }
 

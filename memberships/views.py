@@ -144,14 +144,19 @@ def update_member(request, member_id):
         member.emergency_contact = request.POST.get('emergency_contact')
         member.emergency_phone = request.POST.get('emergency_phone')
         
-        # Handle photo upload
-        if request.FILES.get('member_photo') or request.FILES.get('camera_input'):
-            photo = request.FILES.get('member_photo') or request.FILES.get('camera_input')
-            member.photo = photo
-        
-        # Handle photo removal
+        # Handle photo removal first
         if request.POST.get('remove_photo') == 'true':
+            if member.photo:
+                member.photo.delete(save=False)  # Delete the actual file
             member.photo = None
+        else:
+            # Handle photo upload
+            photo = request.FILES.get('photo') or request.FILES.get('member_photo_edit') or request.FILES.get('camera_input_edit')
+            if photo:
+                # Delete old photo if exists
+                if member.photo:
+                    member.photo.delete(save=False)
+                member.photo = photo
         
         member.save()
         

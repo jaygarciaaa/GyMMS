@@ -72,7 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Enable edit mode
             editModeText.textContent = 'Cancel';
             formActions.style.display = 'flex';
-            if (memberAvatarContainer) memberAvatarContainer.classList.add('editable');
+            if (memberAvatarContainer) {
+                memberAvatarContainer.classList.add('editable');
+                const overlay = document.getElementById('photoEditOverlay');
+                if (overlay) overlay.style.display = 'flex';
+            }
             
             formInputs.forEach(input => {
                 if (input.tagName === 'SELECT') {
@@ -85,7 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Disable edit mode
             editModeText.textContent = 'Edit';
             formActions.style.display = 'none';
-            if (memberAvatarContainer) memberAvatarContainer.classList.remove('editable');
+            if (memberAvatarContainer) {
+                memberAvatarContainer.classList.remove('editable');
+                const overlay = document.getElementById('photoEditOverlay');
+                if (overlay) overlay.style.display = 'none';
+            }
             
             // Restore original values
             formInputs.forEach(input => {
@@ -112,10 +120,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Delete member functionality
     if (deleteMemberBtn) {
         deleteMemberBtn.addEventListener('click', () => {
-            const memberIdElement = document.querySelector('.member-id-display');
-            const memberIdText = memberIdElement ? memberIdElement.textContent : '';
-            const memberId = memberIdText.replace('Member ID:', '').trim();
-            const memberName = document.querySelector('.member-name-display')?.textContent || '';
+            // Get member ID from the card
+            const memberIdElement = document.querySelector('.member-id-value');
+            const memberId = memberIdElement ? memberIdElement.textContent.trim() : '';
+            
+            // Get member name from the card
+            const memberNameElement = document.querySelector('.member-name');
+            const memberName = memberNameElement ? memberNameElement.textContent.trim() : '';
+            
+            // Check if member is active
             const statusBadge = document.querySelector('.status-badge');
             const isActive = statusBadge && statusBadge.classList.contains('active');
             
@@ -134,11 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Date validation
+    // Date validation (only if fields are not readonly)
     const startDateInput = document.getElementById('start_date');
     const endDateInput = document.getElementById('end_date');
     
-    if (startDateInput && endDateInput) {
+    if (startDateInput && endDateInput && !startDateInput.readOnly && !endDateInput.readOnly) {
         // Set min date for end date when start date changes
         startDateInput.addEventListener('change', () => {
             endDateInput.min = startDateInput.value;
@@ -156,16 +169,22 @@ document.addEventListener('DOMContentLoaded', () => {
         endDateInput.min = startDateInput.value;
     }
     
-    // Form submission validation
+    // Form submission validation (skip date validation if fields are readonly)
     if (form) {
         form.addEventListener('submit', (e) => {
-            const startDate = new Date(document.getElementById('start_date').value);
-            const endDate = new Date(document.getElementById('end_date').value);
+            const startDateField = document.getElementById('start_date');
+            const endDateField = document.getElementById('end_date');
             
-            if (endDate <= startDate) {
-                e.preventDefault();
-                alert('End date must be after start date');
-                return false;
+            // Only validate dates if they are not readonly
+            if (startDateField && endDateField && !startDateField.readOnly && !endDateField.readOnly) {
+                const startDate = new Date(startDateField.value);
+                const endDate = new Date(endDateField.value);
+                
+                if (endDate <= startDate) {
+                    e.preventDefault();
+                    alert('End date must be after start date');
+                    return false;
+                }
             }
             
             // Update original values after successful save
@@ -239,14 +258,16 @@ function handlePhotoUploadEdit(file) {
                 // Replace initial with image
                 memberAvatarContainer.innerHTML = `
                     <img src="${e.target.result}" alt="Member Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                    <div class="photo-edit-overlay" id="photoEditOverlay">
+                    <div class="photo-edit-overlay" id="photoEditOverlay" style="display: flex;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                             <circle cx="12" cy="13" r="4"></circle>
                         </svg>
                     </div>
                 `;
-                memberAvatarContainer.classList.add('editable');
+                if (!memberAvatarContainer.classList.contains('editable')) {
+                    memberAvatarContainer.classList.add('editable');
+                }
             }
         };
         reader.readAsDataURL(file);
@@ -262,14 +283,16 @@ function handleRemovePhoto() {
     // Replace with initial
     memberAvatarContainer.innerHTML = `
         ${firstLetter}
-        <div class="photo-edit-overlay" id="photoEditOverlay">
+        <div class="photo-edit-overlay" id="photoEditOverlay" style="display: flex;">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                 <circle cx="12" cy="13" r="4"></circle>
             </svg>
         </div>
     `;
-    memberAvatarContainer.classList.add('editable');
+    if (!memberAvatarContainer.classList.contains('editable')) {
+        memberAvatarContainer.classList.add('editable');
+    }
     
     // Clear the file inputs
     const photoInputEdit = document.getElementById('member_photo_edit');

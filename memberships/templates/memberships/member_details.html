@@ -1,5 +1,6 @@
 {% load static %}
 {% load tz %}
+{% load member_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,22 +49,36 @@
 
 			<!-- Member ID Card -->
 			<div class="member-id-card">
-				<div class="member-avatar-large">
+				<div class="member-avatar-large" id="memberAvatarContainer">
+					{% if member.photo and member.photo|photo_exists %}
+					<img src="{{ member.photo.url }}" alt="{{ member.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+					{% else %}
 					{{ member.name|first|upper }}
+					{% endif %}
+					<div class="photo-edit-overlay" id="photoEditOverlay" style="display: none;">
+						<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+							<circle cx="12" cy="13" r="4"></circle>
+						</svg>
+					</div>
 				</div>
 				<div class="member-id-info">
-					<div class="member-id-label">Member ID</div>
-					<div class="member-id-value">{{ member.member_id }}</div>
-					<div class="member-joined">Joined {{ member.date_created|localtime|date:"M d, Y" }} at {{ member.date_created|localtime|date:"h:i A" }}</div>
+					<div class="member-name">{{ member.name }}</div>
+					<div class="member-id-label">Member ID: <span class="member-id-value">{{ member.member_id }}</span></div>
+					<div class="member-joined">Joined {{ member.date_created|localtime|date:"M d, Y" }}</div>
 					{% if member.created_by %}
-					<div class="member-created-by">Created by {{ member.created_by.username }} ({{ member.created_by.role }})</div>
+					<div class="member-created-by">Added by {{ member.created_by.username }}</div>
 					{% endif %}
 				</div>
 			</div>
 
 			<!-- Edit Form -->
-			<form method="POST" action="{% url 'memberships:update_member' member.member_id %}" class="edit-form" id="memberForm">
+			<form method="POST" action="{% url 'memberships:update_member' member.member_id %}" class="edit-form" id="memberForm" enctype="multipart/form-data">
 				{% csrf_token %}
+				
+				<!-- Hidden photo inputs -->
+				<input type="file" id="member_photo_edit" name="photo" accept="image/*" style="display: none;">
+				<input type="file" id="camera_input_edit" accept="image/*" capture="environment" style="display: none;">
 				
 				<!-- Personal Information Section -->
 				<div class="form-section">
@@ -209,6 +224,9 @@
 
 	<!-- Include Reusable Delete Modal -->
 	{% include 'memberships/delete_modal.html' %}
+
+	<!-- Include Reusable Photo Options Modal -->
+	{% include 'memberships/photo_modal.html' %}
 
 	<script defer src="{% static 'core/js/index.js' %}"></script>
 	<script defer src="{% static 'memberships/js/member_details.js' %}"></script>

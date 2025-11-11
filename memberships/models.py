@@ -7,11 +7,11 @@ import os
 def member_photo_path(instance, filename):
     """
     Generate upload path for member photos
-    Format: member_photos/GYM{member_id}/{filename}
+    Format: member_photos/{member_id}.{ext}
     """
     ext = filename.split('.')[-1]
     filename = f"{instance.member_id}.{ext}"
-    return os.path.join('member_photos', instance.member_id, filename)
+    return os.path.join('member_photos', filename)
 
 
 class Member(models.Model):

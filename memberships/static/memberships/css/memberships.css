@@ -305,6 +305,39 @@
     white-space: nowrap;
 }
 
+/* Left align name column */
+.members-table td.col-name {
+    display: flex;
+    align-items: center;
+}
+
+/* Center align specific columns */
+.members-table td.col-member-id,
+.members-table td.col-start-date,
+.members-table td.col-end-date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.members-table td.col-contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.members-table td.col-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.members-table td.col-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Override overflow for status and actions columns */
 .members-table td.col-status,
 .members-table td.col-actions {
@@ -357,12 +390,16 @@
     font-family: monospace;
     font-weight: 600;
     color: var(--accent);
+    display: inline-flex;
+    align-items: center;
 }
 
 .contact-info {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    align-items: center;
+    text-align: center;
 }
 
 .member-sex {

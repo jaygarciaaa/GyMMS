@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dateFrom = document.getElementById('dateFrom');
     const dateTo = document.getElementById('dateTo');
     const paymentMethodFilter = document.getElementById('paymentMethodFilter');
+    const memberTypeFilter = document.getElementById('memberTypeFilter');
     const clearFiltersBtn = document.getElementById('clearFilters');
     const prevPageBtn = document.getElementById('prevPage');
     const nextPageBtn = document.getElementById('nextPage');
@@ -108,12 +109,18 @@ document.addEventListener('DOMContentLoaded', function() {
         applyFilters();
     });
 
+    // Member type filter
+    memberTypeFilter.addEventListener('change', function() {
+        applyFilters();
+    });
+
     // Clear filters
     clearFiltersBtn.addEventListener('click', function() {
         searchInput.value = '';
         dateFrom.value = '';
         dateTo.value = '';
         paymentMethodFilter.value = '';
+        memberTypeFilter.value = '';
         
         // Redirect to base URL without filters
         window.location.href = '/payments/transactions';
@@ -196,6 +203,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add payment method filter
         if (paymentMethodFilter.value) {
             url.searchParams.set('payment_method', paymentMethodFilter.value);
+        }
+        
+        // Add member type filter
+        if (memberTypeFilter.value) {
+            url.searchParams.set('member_type', memberTypeFilter.value);
         }
         
         // Add pagination
@@ -380,6 +392,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('payment_method')) {
         paymentMethodFilter.value = urlParams.get('payment_method');
+    }
+    if (urlParams.has('member_type')) {
+        memberTypeFilter.value = urlParams.get('member_type');
     }
 
     // ===== NOTIFICATION FUNCTION =====

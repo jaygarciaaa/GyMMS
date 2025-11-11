@@ -135,7 +135,8 @@ def search_active_members(request):
             'member_id': member.member_id,
             'name': member.name,
             'status': status,
-            'end_date': member.end_date.strftime('%Y-%m-%d')
+            'end_date': member.end_date.strftime('%Y-%m-%d'),
+            'photo': member.photo.url if member.photo else None
         })
     
     return JsonResponse({'members': results})

@@ -11,11 +11,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get elements
         const memberSearchInput = document.getElementById('member_search');
         const memberIdHidden = document.getElementById('member_id');
+        const paymentForm = document.getElementById('paymentForm');
         
         if (memberSearchInput && memberIdHidden) {
             // Set up walk-in guest
             memberSearchInput.value = 'GYMMSGUEST';
             memberIdHidden.value = 'GYMMSGUEST';
+            
+            // Add hidden input for guest name
+            const guestNameInput = document.createElement('input');
+            guestNameInput.type = 'hidden';
+            guestNameInput.name = 'guest_name';
+            guestNameInput.value = guest.name;
+            guestNameInput.id = 'guest_name_hidden';
+            paymentForm.appendChild(guestNameInput);
             
             // Trigger member info display for guest
             const guestMember = {
@@ -77,7 +86,7 @@ function updateGuestMemberCard(member) {
 function selectWalkInPricing() {
     const pricingSelect = document.getElementById('pricing_id');
     if (pricingSelect) {
-        // Look for "Walk-In" or "Daily Walk-in" option
+        // Look for "Walk-In" or "Daily Walk-in" option and pre-select it
         for (let option of pricingSelect.options) {
             if (option.text.toLowerCase().includes('walk-in') || 
                 option.text.toLowerCase().includes('walk in') ||
@@ -87,26 +96,7 @@ function selectWalkInPricing() {
             }
         }
         
-        // Make the select field disabled/readonly
-        pricingSelect.disabled = true;
-        pricingSelect.style.opacity = '0.7';
-        pricingSelect.style.cursor = 'not-allowed';
-        pricingSelect.style.background = '#f3f4f6';
-        
-        // Add a hidden input to ensure the value is still submitted
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'pricing_id';
-        hiddenInput.value = pricingSelect.value;
-        hiddenInput.id = 'pricing_id_hidden';
-        pricingSelect.parentNode.appendChild(hiddenInput);
-        
-        // Update hidden input if user somehow changes the select
-        pricingSelect.addEventListener('change', function() {
-            const hidden = document.getElementById('pricing_id_hidden');
-            if (hidden) {
-                hidden.value = this.value;
-            }
-        });
+        // Keep the select field enabled so staff can choose different membership plans
+        // Walk-in guests can now select any membership plan they want
     }
 }

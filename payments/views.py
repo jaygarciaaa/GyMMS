@@ -30,8 +30,8 @@ def payments(request):
     # Get all active pricing options
     pricing_options = MembershipPricing.objects.filter(is_active=True)
     
-    # Get recent payments (last 50)
-    recent_payments = Payment.objects.select_related('member', 'processed_by')[:50]
+    # Get recent payments (last 5)
+    recent_payments = Payment.objects.select_related('member', 'processed_by')[:5]
     
     # Search functionality
     search_query = request.GET.get('search', '').strip()
@@ -68,53 +68,84 @@ def process_payment(request):
             reference_number = request.POST.get('reference_number', '').strip()
             remarks = request.POST.get('remarks', '').strip()
             
-            # Validate member
-            member = get_object_or_404(Member, member_id=member_id, is_deleted=False)
+            # Check if this is a walk-in guest
+            is_walkin = (member_id == 'GYMMSGUEST')
+            
+            if is_walkin:
+                # For walk-in guests, we don't have a member record
+                member = None
+                # Get guest name from remarks or use default
+                guest_name = request.POST.get('guest_name', 'Walk-in Guest')
+                stored_member_id = 'GYMMSGUEST'
+                stored_member_name = guest_name
+            else:
+                # Validate member for regular payments
+                member = get_object_or_404(Member, member_id=member_id, is_deleted=False)
+                stored_member_id = member.member_id
+                stored_member_name = member.name
             
             # Validate pricing
             pricing = get_object_or_404(MembershipPricing, id=pricing_id, is_active=True)
             
             # Create payment record
             payment = Payment.objects.create(
-                member=member,
-                stored_member_id=member.member_id,
-                stored_member_name=member.name,
+                member=member,  # None for walk-in guests
+                stored_member_id=stored_member_id,
+                stored_member_name=stored_member_name,
                 amount=pricing.price,
                 payment_method=payment_method,
                 reference_number=reference_number if reference_number else None,
                 payment_date=timezone.now(),
                 status='Completed',
                 processed_by=request.user,
-                remarks=remarks
+                remarks=remarks,
+                # Store membership plan reference and details
+                membership_plan=pricing,
+                stored_plan_label=pricing.duration_label,
+                stored_duration_days=pricing.duration_days
             )
             
-            # Update member subscription dates
-            today = timezone.now().date()
-            
-            # If member's subscription is expired or ending soon, start from today
-            # Otherwise, extend from current end_date
-            if member.end_date < today:
-                member.start_date = today
-                member.end_date = today + timedelta(days=pricing.duration_days)
+            # Update member subscription dates (only for registered members, not walk-ins)
+            if not is_walkin and member:
+                today = timezone.now().date()
+                
+                # If member's subscription is expired or not active, start from today
+                # Otherwise, extend from current end_date
+                if member.end_date < today or not member.is_active:
+                    member.start_date = today
+                    member.end_date = today + timedelta(days=pricing.duration_days)
+                else:
+                    # Extend current subscription (keep start_date as is)
+                    member.end_date = member.end_date + timedelta(days=pricing.duration_days)
+                
+                # Update membership fee to current pricing
+                member.membership_fee = pricing.price
+                member.is_active = True
+                member.save()
+                
+                # Debug logging
+                print(f"[PAYMENT] Member {member.member_id} subscription updated:")
+                print(f"  - is_active: {member.is_active}")
+                print(f"  - start_date: {member.start_date}")
+                print(f"  - end_date: {member.end_date}")
+                print(f"  - membership_fee: {member.membership_fee}")
+                
+                success_message = f'Payment processed successfully! {member.name}\'s membership extended until {member.end_date.strftime("%b %d, %Y")}'
+                new_end_date = member.end_date.strftime('%Y-%m-%d')
             else:
-                # Extend current subscription
-                member.end_date = member.end_date + timedelta(days=pricing.duration_days)
+                # Walk-in guest
+                print(f"[PAYMENT] Walk-in guest payment processed: {stored_member_name}")
+                success_message = f'Walk-in payment processed successfully for {stored_member_name}!'
+                new_end_date = None
             
-            # Update membership fee to current pricing
-            member.membership_fee = pricing.price
-            member.is_active = True
-            member.save()
-            
-            messages.success(
-                request,
-                f'Payment processed successfully! {member.name}\'s membership extended until {member.end_date.strftime("%b %d, %Y")}'
-            )
+            messages.success(request, success_message)
             
             return JsonResponse({
                 'success': True,
-                'message': 'Payment processed successfully',
+                'message': success_message,
                 'payment_id': str(payment.id),
-                'new_end_date': member.end_date.strftime('%Y-%m-%d')
+                'new_end_date': new_end_date,
+                'is_walkin': is_walkin
             })
             
         except Member.DoesNotExist:
@@ -239,6 +270,16 @@ def transaction_history(request):
         else:
             transactions = transactions.filter(payment_method=payment_method)
     
+    # Member type filter (members vs walk-ins)
+    member_type = request.GET.get('member_type', '').strip()
+    if member_type:
+        if member_type == 'member':
+            # Regular members (not walk-ins)
+            transactions = transactions.exclude(stored_member_id='GYMMSGUEST')
+        elif member_type == 'walkin':
+            # Walk-in guests only
+            transactions = transactions.filter(stored_member_id='GYMMSGUEST')
+    
     # Calculate summary statistics for filtered results
     stats = transactions.aggregate(
         total_revenue=Sum('amount'),
@@ -276,6 +317,7 @@ def transaction_history(request):
         'date_from': date_from,
         'date_to': date_to,
         'payment_method': payment_method,
+        'member_type': member_type,
         'total_revenue': stats['total_revenue'] or 0,
         'total_count': stats['total_count'] or 0,
         'average_amount': stats['average_amount'] or 0,

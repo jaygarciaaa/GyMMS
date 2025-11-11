@@ -137,8 +137,27 @@ function setupCheckInModal() {
         memberSearch.value = '';
         
         // Update member card (already visible by default)
-        const initials = member.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-        document.getElementById('memberCardAvatar').textContent = initials;
+        const avatarElement = document.getElementById('memberCardAvatar');
+        
+        // Clear previous content
+        avatarElement.innerHTML = '';
+        
+        // Display photo if available, otherwise show initials
+        if (member.photo) {
+            const img = document.createElement('img');
+            img.src = member.photo;
+            img.alt = member.name;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '50%';
+            avatarElement.appendChild(img);
+        } else {
+            // Generate initials
+            const initials = member.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            avatarElement.textContent = initials;
+        }
+        
         document.getElementById('memberCardName').textContent = member.name;
         document.getElementById('memberCardId').textContent = `ID: ${member.member_id}`;
         

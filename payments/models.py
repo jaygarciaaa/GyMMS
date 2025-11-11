@@ -46,6 +46,20 @@ class Payment(models.Model):
     stored_member_id = models.CharField(max_length=10, default='UNKNOWN', help_text='Member ID at time of payment', db_index=True)
     stored_member_name = models.CharField(max_length=150, default='Unknown Member', help_text='Member name at time of payment')
     
+    # Membership plan reference (nullable to preserve payment history if plan deleted)
+    membership_plan = models.ForeignKey(
+        'MembershipPricing',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='payments',
+        help_text='The pricing plan purchased'
+    )
+    
+    # Stored pricing information (preserved even if plan modified/deleted)
+    stored_plan_label = models.CharField(max_length=50, default='Unknown Plan', help_text='Plan label at time of payment')
+    stored_duration_days = models.IntegerField(default=0, help_text='Duration in days at time of payment')
+    
     # Payment details
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES, default='Cash')
@@ -95,7 +109,6 @@ class MembershipPricing(models.Model):
     Can only be modified by the owner
     """
     duration_days = models.IntegerField(
-        unique=True,
         help_text='Duration in days (e.g., 30 for monthly, 90 for quarterly)'
     )
     duration_label = models.CharField(

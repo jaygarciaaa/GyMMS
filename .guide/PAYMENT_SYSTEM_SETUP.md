@@ -151,7 +151,7 @@ After running `seed_pricing`, these will be available:
 ## Payment Methods
 
 All transactions record:
-- **Payment Medium** (Cash, GCash, GTyme, etc.)
+- **Payment Medium** (Cash, GCash, GoTyme, etc.)
 - **Processed By** (Logged-in user who processed the transaction)
 - **Reference/Transaction Number** (For digital payments only)
 
@@ -162,7 +162,7 @@ Available payment methods:
 | **Cash** | ❌ No | Physical cash payment |
 | **GCash** | ✅ Yes | User enters GCash reference number |
 | **Maya** | ✅ Yes | User enters Maya transaction number |
-| **GTyme** | ✅ Yes | User enters GTyme reference number |
+| **GoTyme** | ✅ Yes | User enters GoTyme reference number |
 | **Bank Transfer** | ✅ Yes | User enters bank transaction number |
 | **PayPal** | ✅ Yes | User enters PayPal transaction ID |
 | **Debit Card** | ✅ Yes | User enters debit card transaction reference |

@@ -17,6 +17,7 @@ def payments(request):
     """
     # Get member_id from URL parameter if provided (from bridge)
     member_id = request.GET.get('member_id')
+    is_walkin = request.GET.get('walkin') == 'true'
     selected_member = None
     today = timezone.now().date()
     
@@ -47,6 +48,7 @@ def payments(request):
         'recent_payments': recent_payments,
         'search_query': search_query,
         'today': today,
+        'is_walkin': is_walkin,
     }
     
     return render(request, "payments/payments.html", context)
@@ -232,7 +234,7 @@ def transaction_history(request):
     if payment_method:
         if payment_method == 'Digital':
             # Filter for all digital payment methods (exclude Cash)
-            digital_methods = ['GCash', 'Maya', 'GTyme', 'Bank Transfer', 'PayPal', 'Debit Card', 'Credit Card']
+            digital_methods = ['GCash', 'Maya', 'GoTyme', 'Bank Transfer', 'PayPal', 'Debit Card', 'Credit Card']
             transactions = transactions.filter(payment_method__in=digital_methods)
         else:
             transactions = transactions.filter(payment_method=payment_method)

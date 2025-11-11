@@ -9,19 +9,19 @@ class Payment(models.Model):
     Payment records for gym memberships
     Stores member info to preserve data even if member is deleted
     """
-    PAYMENT_METHODS = [
+    PAYMENT_METHOD_CHOICES = [
         ('Cash', 'Cash'),
         ('GCash', 'GCash'),
         ('Maya', 'Maya'),
-        ('GTyme', 'GTyme'),
+        ('GoTyme', 'GoTyme'),
         ('Bank Transfer', 'Bank Transfer'),
         ('PayPal', 'PayPal'),
         ('Debit Card', 'Debit Card'),
         ('Credit Card', 'Credit Card'),
     ]
     
-    # Digital payment methods that require reference number
-    DIGITAL_PAYMENT_METHODS = ['GCash', 'Maya', 'GTyme', 'Bank Transfer', 'PayPal', 'Debit Card', 'Credit Card']
+    # Digital payment methods that require reference numbers
+    DIGITAL_PAYMENT_METHODS = ['GCash', 'Maya', 'GoTyme', 'Bank Transfer', 'PayPal', 'Debit Card', 'Credit Card']
     
     PAYMENT_STATUS = [
         ('Completed', 'Completed'),
@@ -48,7 +48,7 @@ class Payment(models.Model):
     
     # Payment details
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    payment_method = models.CharField(max_length=50, choices=PAYMENT_METHODS, default='Cash')
+    payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES, default='Cash')
     reference_number = models.CharField(
         max_length=100,
         blank=True,

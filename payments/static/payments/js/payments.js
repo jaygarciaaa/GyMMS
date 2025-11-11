@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== PAYMENT METHOD HANDLING =====
     
     // Digital payment methods that require reference number
-    const digitalMethods = ['GCash', 'Maya', 'GTyme', 'Bank Transfer', 'PayPal', 'Debit Card', 'Credit Card'];
+    const digitalMethods = ['GCash', 'Maya', 'GoTyme', 'Bank Transfer', 'PayPal', 'Debit Card', 'Credit Card'];
     const referenceRequired = document.getElementById('referenceRequired');
     
     paymentMethodSelect.addEventListener('change', function() {

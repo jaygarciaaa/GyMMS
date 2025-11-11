@@ -7,7 +7,7 @@
 	<meta name="description" content="GyMMS Dashboard - Manage your gym operations">
 	<title>Dashboard | GyMMS</title>
 	<link rel="stylesheet" href="{% static 'core/css/index.css' %}">
-	<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}?v=7">
+	<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}?v=9">
 </head>
 <body>
 	{% include 'core/navbar.html' %}
@@ -91,7 +91,18 @@
 					<div class="activity-card">
 					<div class="card-header">
 						<a href="{% url 'metrics:metrics' %}" class="card-title">Recent Check-ins</a>
-						<span class="card-badge">{{ recent_check_ins|length }}</span>
+						<div class="card-header-actions">
+							<span class="card-badge">{{ recent_check_ins|length }}</span>
+							<button type="button" class="btn-check-in" id="btnCheckIn">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+									<circle cx="9" cy="7" r="4"></circle>
+									<line x1="19" y1="8" x2="19" y2="14"></line>
+									<line x1="22" y1="11" x2="16" y2="11"></line>
+								</svg>
+								Log Check-in
+							</button>
+						</div>
 					</div>
 					
 					{% if recent_check_ins %}
@@ -164,6 +175,85 @@
 							<span class="chart-bar-label">{{ hour_data.hour }}:00</span>
 						</div>
 						{% endfor %}
+					</div>
+				</div>
+			</div>
+
+			<!-- Check-in Modal -->
+			<div class="modal" id="checkInModal">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h2>Log Member Check-in</h2>
+						<button type="button" class="modal-close" id="closeModal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<div class="check-in-options">
+							<button type="button" class="option-btn active" data-type="member">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+									<circle cx="9" cy="7" r="4"></circle>
+									<path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+									<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+								</svg>
+								Member Check-in
+							</button>
+							<button type="button" class="option-btn" data-type="walkin">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+									<circle cx="9" cy="7" r="4"></circle>
+									<line x1="19" y1="8" x2="19" y2="14"></line>
+									<line x1="22" y1="11" x2="16" y2="11"></line>
+								</svg>
+								Walk-in Guest
+							</button>
+						</div>
+
+						<!-- Member Check-in Form -->
+						<form id="memberCheckInForm" class="check-in-form active">
+							<div class="form-group">
+								<label for="memberSearch">Search Member</label>
+								<div class="search-container">
+									<input type="text" id="memberSearch" placeholder="Search by Member ID or Name..." autocomplete="off">
+									<div class="search-results-dropdown" id="memberSearchResults"></div>
+								</div>
+							</div>
+							<div class="selected-member-info" id="selectedMemberInfo" style="display: none;">
+								<div class="member-card">
+									<div class="member-card-avatar" id="memberCardAvatar"></div>
+									<div class="member-card-details">
+										<h4 id="memberCardName"></h4>
+										<p id="memberCardId"></p>
+										<span class="member-card-status" id="memberCardStatus"></span>
+									</div>
+								</div>
+							</div>
+							<input type="hidden" id="selectedMemberId">
+							<div class="modal-actions">
+								<button type="button" class="btn-secondary" id="cancelMemberCheckIn">Cancel</button>
+								<button type="submit" class="btn-primary" id="submitMemberCheckIn">Log Check-in</button>
+							</div>
+						</form>
+
+						<!-- Walk-in Guest Form -->
+						<form id="walkInForm" class="check-in-form">
+							<p class="walk-in-notice">Walk-in guests will be redirected to payment processing.</p>
+							<div class="form-group">
+								<label for="guestName">Guest Name</label>
+								<input type="text" id="guestName" placeholder="Enter guest name" value="Guest" required>
+							</div>
+							<div class="form-group">
+								<label for="guestGender">Gender</label>
+								<select id="guestGender" required>
+									<option value="">Select gender</option>
+									<option value="Male">Male</option>
+									<option value="Female">Female</option>
+								</select>
+							</div>
+							<div class="modal-actions">
+								<button type="button" class="btn-secondary" id="cancelWalkIn">Cancel</button>
+								<button type="submit" class="btn-primary" id="submitWalkIn">Proceed to Payment</button>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>

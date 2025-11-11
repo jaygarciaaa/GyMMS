@@ -39,6 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Setup revenue privacy toggle
     setupRevenueToggle();
+    
+    // Setup check-in modal
+    setupCheckInModal();
 });
 
 // Animate stat cards
@@ -142,3 +145,216 @@ function refreshDashboardData() {
 
 // Optional: Setup auto-refresh (commented out by default)
 // setInterval(refreshDashboardData, 60000); // Refresh every minute
+
+// Check-in Modal Setup
+function setupCheckInModal() {
+    const modal = document.getElementById('checkInModal');
+    const btnCheckIn = document.getElementById('btnCheckIn');
+    const closeModal = document.getElementById('closeModal');
+    const optionBtns = document.querySelectorAll('.option-btn');
+    const memberCheckInForm = document.getElementById('memberCheckInForm');
+    const walkInForm = document.getElementById('walkInForm');
+    const memberSearch = document.getElementById('memberSearch');
+    const memberSearchResults = document.getElementById('memberSearchResults');
+    const selectedMemberInfo = document.getElementById('selectedMemberInfo');
+    const cancelMemberCheckIn = document.getElementById('cancelMemberCheckIn');
+    const cancelWalkIn = document.getElementById('cancelWalkIn');
+    
+    let searchTimeout = null;
+    let selectedMember = null;
+    
+    // Open modal
+    btnCheckIn.addEventListener('click', () => {
+        modal.classList.add('active');
+        resetModal();
+    });
+    
+    // Close modal
+    closeModal.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+    
+    cancelMemberCheckIn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+    
+    cancelWalkIn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+    
+    // Click outside modal to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+    
+    // Switch between member and walk-in
+    optionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            optionBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const type = btn.dataset.type;
+            if (type === 'member') {
+                memberCheckInForm.classList.add('active');
+                walkInForm.classList.remove('active');
+            } else {
+                memberCheckInForm.classList.remove('active');
+                walkInForm.classList.add('active');
+            }
+        });
+    });
+    
+    // Member search
+    memberSearch.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        if (searchTimeout) clearTimeout(searchTimeout);
+        
+        if (query.length < 2) {
+            memberSearchResults.classList.remove('active');
+            memberSearchResults.innerHTML = '';
+            return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+            searchMembers(query);
+        }, 300);
+    });
+    
+    function searchMembers(query) {
+        fetch(`/dashboard/search-active-members/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displayMemberResults(data.members);
+            })
+            .catch(error => {
+                console.error('Error searching members:', error);
+            });
+    }
+    
+    function displayMemberResults(members) {
+        if (members.length === 0) {
+            memberSearchResults.innerHTML = '<div class="search-result-item">No active or expiring members found</div>';
+        } else {
+            memberSearchResults.innerHTML = members.map(member => `
+                <div class="search-result-item" data-member='${JSON.stringify(member)}'>
+                    <div class="search-result-name">${member.name}</div>
+                    <div class="search-result-id">${member.member_id} - ${member.status}</div>
+                </div>
+            `).join('');
+            
+            // Add click handlers
+            document.querySelectorAll('.search-result-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const member = JSON.parse(this.dataset.member);
+                    selectMember(member);
+                });
+            });
+        }
+        
+        memberSearchResults.classList.add('active');
+    }
+    
+    function selectMember(member) {
+        selectedMember = member;
+        document.getElementById('selectedMemberId').value = member.member_id;
+        memberSearch.value = `${member.member_id} - ${member.name}`;
+        memberSearchResults.classList.remove('active');
+        
+        // Show member info
+        const initials = member.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        document.getElementById('memberCardAvatar').textContent = initials;
+        document.getElementById('memberCardName').textContent = member.name;
+        document.getElementById('memberCardId').textContent = member.member_id;
+        
+        const statusBadge = document.getElementById('memberCardStatus');
+        statusBadge.textContent = member.status === 'active' ? 'Active' : 'Expiring Soon';
+        statusBadge.className = 'member-card-status ' + member.status;
+        
+        selectedMemberInfo.style.display = 'block';
+    }
+    
+    // Member check-in submission
+    memberCheckInForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!selectedMember) {
+            alert('Please select a member');
+            return;
+        }
+        
+        const submitBtn = document.getElementById('submitMemberCheckIn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Logging...';
+        
+        fetch('/dashboard/log-checkin/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                member_id: selectedMember.member_id
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Check-in logged successfully!');
+                modal.classList.remove('active');
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while logging check-in');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Log Check-in';
+        });
+    });
+    
+    // Walk-in submission
+    walkInForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const guestName = document.getElementById('guestName').value.trim();
+        const guestGender = document.getElementById('guestGender').value;
+        
+        if (!guestName || !guestGender) {
+            alert('Please fill in all fields');
+            return;
+        }
+        
+        // Store walk-in data in sessionStorage and redirect to payments
+        sessionStorage.setItem('walkInGuest', JSON.stringify({
+            name: guestName,
+            gender: guestGender
+        }));
+        
+        window.location.href = '/payments/?walkin=true';
+    });
+    
+    function resetModal() {
+        memberSearch.value = '';
+        memberSearchResults.innerHTML = '';
+        memberSearchResults.classList.remove('active');
+        selectedMemberInfo.style.display = 'none';
+        selectedMember = null;
+        document.getElementById('guestName').value = 'Guest';
+        document.getElementById('guestGender').value = '';
+        
+        // Reset to member check-in
+        optionBtns[0].click();
+    }
+    
+    function getCsrfToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+               document.cookie.match(/csrftoken=([^;]+)/)?.[1];
+    }
+}

@@ -1,24 +1,35 @@
-# Django + PostgreSQL (Docker)
+# Base image
+FROM python:3.11
 
-# Use an official Python image
-FROM python:3.11-slim
-
-# Disable .pyc and enable unbuffered logs
+# Environment
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+
+# Install dependencies including Nginx
+RUN apt-get update && apt-get install -y nginx curl && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
+# Copy Python requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy Django project
 COPY . .
 
-# Expose Django port
-EXPOSE 8000
+# Copy Nginx config
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
-# Run Django server (for development)
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Copy Cloudflare Origin certs
+COPY certs /etc/certs
+
+# Expose ports (HTTP and HTTPS)
+EXPOSE 80 443
+
+# Start Nginx and Django with Gunicorn
+CMD service nginx start && \
+    python manage.py wait_for_db && \
+    python manage.py makemigrations && \
+    python manage.py migrate && \
+    gunicorn config.wsgi:application --bind 0.0.0.0:8000

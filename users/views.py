@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.db import transaction
 from django.conf import settings
+from django.template.loader import render_to_string
 from .models import StaffUser
 from payments.models import MembershipPricing
 
@@ -122,7 +123,6 @@ def admin_panel(request):
 
     # AJAX partial for pricing grid refresh
     if request.headers.get('x-requested-with') == 'XMLHttpRequest' and request.GET.get('pricing_only') == '1':
-        from django.template.loader import render_to_string
         html = render_to_string('users/_pricing_grid.html', {'pricing_plans': pricing_plans})
         return JsonResponse({'success': True, 'html': html})
 

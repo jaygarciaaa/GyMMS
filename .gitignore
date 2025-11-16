@@ -165,4 +165,4 @@ dmypy.json
 cython_debug/
 
 # Server configurations
-server_conf/
+/server_conf/

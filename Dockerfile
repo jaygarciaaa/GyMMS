@@ -19,10 +19,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Copy Nginx config
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY server_conf/nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Copy Cloudflare Origin certs
-COPY certs /etc/certs
+COPY server_conf/certs /etc/certs
 
 # Expose ports (HTTP and HTTPS)
 EXPOSE 80 443

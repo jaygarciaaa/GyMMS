@@ -1,6 +1,8 @@
+
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 import os
 
 
@@ -32,8 +34,14 @@ class Member(models.Model):
     )
     name = models.CharField(max_length=150)
     email = models.EmailField(blank=True, null=True)
-    phone_number = models.CharField(max_length=15)
-    sex = models.CharField(max_length=10, choices=SEX_CHOICES, blank=True, null=True)
+    phone_number = models.CharField(
+        max_length=20,
+        validators=[RegexValidator(
+            regex=r'^\d+$',
+            message='Only numbers are allowed for phone number.'
+        )]
+    )
+    sex = models.CharField(max_length=7, choices=SEX_CHOICES, blank=True, null=True)
     address = models.TextField()
     
     # Photo
@@ -41,7 +49,13 @@ class Member(models.Model):
     
     # Emergency Contact
     emergency_contact = models.CharField(max_length=100)
-    emergency_phone = models.CharField(max_length=15)
+    emergency_phone = models.CharField(
+        max_length=20,
+        validators=[RegexValidator(
+            regex=r'^\d+$',
+            message='Only numbers are allowed for emergency phone.'
+        )]
+    )
     
     # Membership Details
     start_date = models.DateField()

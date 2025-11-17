@@ -1,5 +1,12 @@
 // Staff Management JavaScript
 document.addEventListener('DOMContentLoaded', function() {
+        // Numeric-only input for phone number
+        const staffPhoneInput = document.getElementById('staffPhone');
+        if (staffPhoneInput) {
+            staffPhoneInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^\d]/g, '');
+            });
+        }
     console.log('Staff Management JS loaded');
 
     const addStaffBtn = document.getElementById('addStaffBtn');

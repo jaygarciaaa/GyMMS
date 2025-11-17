@@ -1,5 +1,19 @@
 // Membership Pricing JavaScript
 document.addEventListener('DOMContentLoaded', function() {
+
+        // Numeric-only input for price and duration fields
+        const priceInput = document.getElementById('pricingPrice');
+        if (priceInput) {
+            priceInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^\d.]/g, '');
+            });
+        }
+        const durationInput = document.getElementById('pricingDuration');
+        if (durationInput) {
+            durationInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^\d]/g, '');
+            });
+        }
     console.log('Membership Pricing JS loaded');
 
     const addPricingBtn = document.getElementById('addPricingBtn');

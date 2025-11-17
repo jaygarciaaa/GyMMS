@@ -25,6 +25,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('password_confirm')
     ];
 
+    // Numeric-only input for phone number
+    const phoneInput = document.getElementById('phone_number');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^\d]/g, '');
+        });
+    }
+
     // Store original values for cancel functionality
     const originalValues = {
         name: document.getElementById('name').value,

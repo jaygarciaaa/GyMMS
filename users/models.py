@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.core.validators import RegexValidator
+
 
 class StaffUser(AbstractUser):
     profile_image = models.ImageField(upload_to='staff_photos/', null=True, blank=True)
@@ -8,12 +10,22 @@ class StaffUser(AbstractUser):
         ('Owner', 'Owner'),
         ('Staff', 'Staff'),
     ]
-    
+
     # Login & Basic Staff Requirements
     username = models.CharField(max_length=150, unique=True)
     name = models.CharField(max_length=255, blank=True, help_text='Full name of the staff member')
     email = models.EmailField(unique=False)
-    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    phone_number = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        validators=[RegexValidator(
+            regex=r'^\d+$',
+            message='Only numbers are allowed for phone number.'
+        )]
+    )
+    # Example for another numeric-only input:
+    # employee_id = models.CharField(max_length=10, validators=[RegexValidator(regex=r'^\d+$', message='Only numbers are allowed.')])
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Staff')
     created_by = models.ForeignKey(
         'self',
@@ -22,7 +34,7 @@ class StaffUser(AbstractUser):
         related_name='created_staff',
         help_text='The owner who created this staff account'
     )
-    
+
     # Security & Account Management
     is_email_verified = models.BooleanField(default=False)
     is_phone_verified = models.BooleanField(default=False)

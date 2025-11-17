@@ -38,7 +38,7 @@ class DashboardStats(models.Model):
     date = models.DateField(unique=True, default=timezone.now)
     daily_walk_ins = models.IntegerField(default=0)
     total_check_ins = models.IntegerField(default=0)
-    total_revenue = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     active_members = models.IntegerField(default=0)
     new_members = models.IntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)

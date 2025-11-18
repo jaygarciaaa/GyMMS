@@ -149,13 +149,13 @@ def get_metrics_data(request):
         
         if period == '1d':
             start_date = end_date
-            # Hourly breakdown for 1 day
-            for hour in range(0, 24, 4):
+            # Hourly breakdown for 1 day - 24 hourly points
+            for hour in range(24):
                 period_label = 'AM' if hour < 12 else 'PM'
                 display_hour = hour if hour <= 12 else hour - 12
                 display_hour = 12 if display_hour == 0 else display_hour
                 labels.append(f'{display_hour}{period_label}')
-                date_ranges.append((hour, hour + 4))
+                date_ranges.append((hour, hour + 1))
                 
         elif period == '1w':
             start_date = end_date - timedelta(days=6)
@@ -248,7 +248,8 @@ def get_metrics_data(request):
                     data.append(count)
                     current += timedelta(days=7)
             else:
-                labels = ['No Data']
+                # If no check-ins exist, show empty chart with message
+                labels = ['No Check-ins Yet']
                 data = [0]
         elif is_hourly:
             # Hourly aggregation for single day

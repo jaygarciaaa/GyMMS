@@ -18,4 +18,5 @@ urlpatterns = [
     path("admin/pricing/delete/<int:pricing_id>/", views.delete_pricing, name="delete_pricing"),
     path("profile/", views.profile, name="profile"),
     path("profile/delete_photo/", views.delete_profile_photo, name="delete_profile_photo"),
+    path("profile/delete_account/", views.delete_account, name="delete_account"),
 ]

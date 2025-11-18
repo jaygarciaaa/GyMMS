@@ -13,6 +13,7 @@ from payments.models import MembershipPricing
 @login_required
 def profile(request):
     """User profile view - allows users to view and edit their own profile"""
+    import time
     user = request.user
     
     if request.method == 'POST':
@@ -68,8 +69,13 @@ def profile(request):
             response['profile_image_url'] = settings.MEDIA_URL + user.profile_image.name
         return JsonResponse(response)
 
-    # GET: Render profile page
-    return render(request, 'users/profile.html', {'user': user})
+    # GET: Render profile page with cache-busting timestamp
+    import time
+    context = {
+        'user': user,
+        'timestamp': int(time.time() * 1000)  # Milliseconds timestamp for cache-busting
+    }
+    return render(request, 'users/profile.html', context)
 
 
 @login_required
@@ -88,6 +94,53 @@ def delete_profile_photo(request):
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)})
     return JsonResponse({'success': False, 'message': 'No profile photo to delete.'})
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_account(request):
+    """Delete user's own account (Staff only) - requires password confirmation"""
+    import json
+    from django.contrib.auth import authenticate, logout
+    
+    user = request.user
+    
+    # Only staff can delete their own account, not owners
+    if user.role != 'Staff':
+        return JsonResponse({'success': False, 'message': 'Only staff accounts can be self-deleted.'}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        password = data.get('password')
+        
+        if not password:
+            return JsonResponse({'success': False, 'message': 'Password is required.'})
+        
+        # Verify password
+        authenticated_user = authenticate(username=user.username, password=password)
+        if not authenticated_user:
+            return JsonResponse({'success': False, 'message': 'Incorrect password.'})
+        
+        # Delete profile photo if exists
+        if user.profile_image:
+            try:
+                photo_path = user.profile_image.path if hasattr(user.profile_image, 'path') else os.path.join(settings.MEDIA_ROOT, str(user.profile_image))
+                if os.path.exists(photo_path):
+                    os.remove(photo_path)
+            except:
+                pass
+        
+        # Mark as deleted (soft delete)
+        user.is_active = False
+        user.save()
+        
+        # Log out the user
+        logout(request)
+        
+        return JsonResponse({'success': True, 'message': 'Account deleted successfully.'})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
 
 
 @login_required

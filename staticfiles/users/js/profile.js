@@ -317,8 +317,90 @@ document.addEventListener('DOMContentLoaded', function() {
             if (confirmationModal && confirmationModal.classList.contains('active')) {
                 closeModal('confirmationModal');
             }
+            if (deleteAccountModal && deleteAccountModal.classList.contains('active')) {
+                closeModal('deleteAccountModal');
+            }
         }
     });
+
+    // Delete Account Functionality (Staff Only)
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const deleteAccountModal = document.getElementById('deleteAccountModal');
+    const closeDeleteModal = document.getElementById('closeDeleteModal');
+    const cancelDeleteModal = document.getElementById('cancelDeleteModal');
+    const confirmDeleteAccount = document.getElementById('confirmDeleteAccount');
+    
+    if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener('click', function() {
+            document.getElementById('deletePassword').value = '';
+            openModal('deleteAccountModal');
+        });
+    }
+    
+    // Close delete modal with X button
+    if (closeDeleteModal) {
+        closeDeleteModal.addEventListener('click', function() {
+            closeModal('deleteAccountModal');
+        });
+    }
+    
+    // Close delete modal with Cancel button
+    if (cancelDeleteModal) {
+        cancelDeleteModal.addEventListener('click', function() {
+            closeModal('deleteAccountModal');
+        });
+    }
+    
+    // Close delete modal when clicking outside
+    if (deleteAccountModal) {
+        deleteAccountModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal('deleteAccountModal');
+            }
+        });
+    }
+    
+    if (confirmDeleteAccount) {
+        confirmDeleteAccount.addEventListener('click', function() {
+            const password = document.getElementById('deletePassword').value;
+            
+            if (!password) {
+                showNotification('Please enter your password', 'warning');
+                return;
+            }
+            
+            // Disable button and show loading state
+            confirmDeleteAccount.disabled = true;
+            confirmDeleteAccount.textContent = 'Deleting...';
+            
+            fetch('/users/profile/delete_account/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCsrfToken(),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Account deleted successfully. Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    showNotification(data.message || 'Failed to delete account', 'error');
+                    confirmDeleteAccount.disabled = false;
+                    confirmDeleteAccount.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Delete My Account`;
+                }
+            })
+            .catch(error => {
+                showNotification('Error deleting account', 'error');
+                confirmDeleteAccount.disabled = false;
+                confirmDeleteAccount.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Delete My Account`;
+            });
+        });
+    }
 
     // Helper function to get CSRF token
     function getCsrfToken() {

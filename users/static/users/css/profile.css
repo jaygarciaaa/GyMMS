@@ -303,6 +303,83 @@
     font-weight: 500;
 }
 
+/* ===========================
+   DELETE ACCOUNT SECTION
+   =========================== */
+
+.delete-account-section {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border: 2px solid #fecaca;
+    margin-bottom: 1.5rem;
+    margin-top: 2rem; /* Add space above the delete section */
+}
+
+.delete-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.delete-warning svg {
+    flex-shrink: 0;
+    color: #dc2626;
+    margin-top: 0.25rem;
+}
+
+.delete-warning div {
+    flex: 1;
+}
+
+.delete-warning h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #991b1b;
+    margin: 0 0 0.5rem 0;
+}
+
+.delete-warning p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Delete Button */
+.btn-danger {
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #dc2626;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-danger svg {
+    flex-shrink: 0;
+}
+
 /* Confirmation Modal Styles - Isolated with confirm-modal-* classes */
 /* Modal Overlay - Hidden by default */
 .confirm-modal {
@@ -814,6 +891,26 @@
 
 .camera-canvas-hidden {
     display: none;
+}
+
+/* ===========================
+   DELETE ACCOUNT MODAL
+   =========================== */
+
+.modal-small {
+    max-width: 500px;
+}
+
+.modal .form-group {
+    margin-bottom: 1rem;
+}
+
+.modal .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-size: 0.95rem;
 }
 
 /* ===========================
